@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Login - Go Server</title>
+</head>
+<body>
+	<h1>Login</h1>
+	<img th:src="@{/images/welcome.png}"  width=500 />
+	<div th:if="${error}">Unable to login. Check your username and
+		password.</div>
+	<!-- tag::thAction[] -->
+	<form method="POST" th:action="@{/login}" id="loginForm">
+		<!-- end::thAction[] -->
+		<label for="username">Username: </label>
+		<input type="text" name="username" id="username" /><br /><!-- name needs to be 'username' for Spring to find it -->
+		<label for="password">Password:	</label>
+		<input type="password" name="password" id="password" /><br /><!-- name needs to be 'password' for Spring to find it -->
+		<input type="submit" value="Login" />
+	</form>
+	<p>
+		New here? Click <a th:href="@{/register}">here</a> to register.
+	</p>
+</body>
+</html>
