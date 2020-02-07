@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Start Game</title>
+</head>
+<body>
+	<h1>Start a new game</h1>
+	<img th:src="@{/images/welcome.png}" width=500 />
+
+	<form method="POST" th:action="@{/start_game}"
+		th:object="${game_creation}">
+
+		<div class="grid">
+			<h4>Select your color:</h4>
+			<div id="select_color">
+				<table>
+					<tr>
+						<td valign="middle"><input name="color" type="radio"
+							th:value="black" th:field="*{color}" /></td>
+						<td><img th:src="@{/images/stones/black.png}" height=50 /></td>
+						<td valign="middle"><input name="color" type="radio"
+							th:value="white" th:field="*{color}" /></td>
+						<td><img th:src="@{/images/stones/white.png}" height=50 /></td>
+						<td><span class="validationError"
+							th:if="${#fields.hasErrors('color')}" th:errors="*{color}">Color Error</span></td>
+					</tr>
+				</table>
+			</div>
+
+			<h4>Choose a comi:</h4>
+			<div id="select_comi">
+				<input type="text" th:field="*{comi}" /> <span
+					class="validationError" th:if="${#fields.hasErrors('comi')}"
+					th:errors="*{comi}">Comi Error</span>
+			</div>
+
+			<h4>Choose a handycap (stones):</h4>
+			<div id="select_handycap">
+				<input type="text" th:field="*{handycap}" />
+				<span
+					class="validationError" th:if="${#fields.hasErrors('handycap')}"
+					th:errors="*{handycap}">Handycap Error</span>
+			</div>
+		</div>
+
+		<p>
+			<input type="submit" value="Start the game" />
+		</p>
+	</form>
+</body>
+</html>
