@@ -6,7 +6,7 @@
 </head>
 <body>
 	<h1>Start a new game</h1>
-	<img th:src="@{/images/welcome.png}" width=500 />
+	<img th:src="@{/images/welcome.png}" width=300 />
 
 	<form method="POST" th:action="@{/start_game}"
 		th:object="${game_creation}">
@@ -20,15 +20,25 @@
 					<tr>
 						<td valign="middle"><input name="color" type="radio"
 							th:value="black" th:field="*{color}" /></td>
-						<td><img th:src="@{/images/stones/black.png}" height=50 /></td>
+						<td><img th:src="@{/images/stones/black.png}" height=35 /></td>
 						<td valign="middle"><input name="color" type="radio"
 							th:value="white" th:field="*{color}" /></td>
-						<td><img th:src="@{/images/stones/white.png}" height=50 /></td>
+						<td><img th:src="@{/images/stones/white.png}" height=35 /></td>
 						<td><span class="validationError"
 							th:if="${#fields.hasErrors('color')}" th:errors="*{color}">Color
 								Error</span></td>
 					</tr>
 				</table>
+			</div>
+
+			<h4>Select a board size:</h4>
+			<div>
+				<input name="boardSize" type="radio" th:value=9
+					th:field="*{boardSize}" />9 <input name="boardSize" type="radio"
+					th:value=13 th:field="*{boardSize}" />13 <input name="boardSize"
+					type="radio" th:value=19 th:field="*{boardSize}" />19 <span
+					class="validationError" th:if="${#fields.hasErrors('boardSize')}"
+					th:errors="*{boardSize}">Board Size Error</span>
 			</div>
 
 			<h4>Choose a comi:</h4>

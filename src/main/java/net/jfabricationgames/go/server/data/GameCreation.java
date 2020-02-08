@@ -19,4 +19,7 @@ public class GameCreation {
 	@Min(value = 0, message = "The minimum handycap is 0")
 	@Max(value = 9, message = "The maximum handycap is 9")
 	private int handycap;
+	@NotNull(message = "Choose a board size")
+	@Min(value = 9, message = "Choose a board size")//because 0 is used when nothing else is selected
+	private int boardSize;
 }
