@@ -10,12 +10,12 @@ import lombok.Data;
 @Data
 public class GameCreation {
 	
-	@NotNull
+	@NotNull(message = "Choose either black or white")
 	@Pattern(regexp = "black|white", message = "Choose either black or white")
 	private String color;
 	@Min(value = 0, message = "Comi can't be lower than 0")
 	@Max(value = 10, message = "Comi can't be higher than 10")
-	private double comi;
+	private double comi = 5.5;
 	@Min(value = 0, message = "The minimum handycap is 0")
 	@Max(value = 9, message = "The maximum handycap is 9")
 	private int handycap;

@@ -10,6 +10,8 @@
 
 	<form method="POST" th:action="@{/start_game}"
 		th:object="${game_creation}">
+		<!-- WARN: th:object has to be the class-name with the first letter in lower case 
+		for the error displaying to work (or changes in the controller are needed) -->
 
 		<div class="grid">
 			<h4>Select your color:</h4>
@@ -23,7 +25,8 @@
 							th:value="white" th:field="*{color}" /></td>
 						<td><img th:src="@{/images/stones/white.png}" height=50 /></td>
 						<td><span class="validationError"
-							th:if="${#fields.hasErrors('color')}" th:errors="*{color}">Color Error</span></td>
+							th:if="${#fields.hasErrors('color')}" th:errors="*{color}">Color
+								Error</span></td>
 					</tr>
 				</table>
 			</div>
@@ -37,8 +40,7 @@
 
 			<h4>Choose a handycap (stones):</h4>
 			<div id="select_handycap">
-				<input type="text" th:field="*{handycap}" />
-				<span
+				<input type="text" th:field="*{handycap}" /> <span
 					class="validationError" th:if="${#fields.hasErrors('handycap')}"
 					th:errors="*{handycap}">Handycap Error</span>
 			</div>
