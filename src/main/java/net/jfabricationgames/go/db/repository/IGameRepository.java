@@ -12,5 +12,6 @@ public interface IGameRepository {
 	public List<Game> findByUser(String username) throws SQLException;
 	public Game findById(long gameId);
 	
-	public void save(Game game);
+	public Game create(Game game);
+	public void update(Game game);
 }

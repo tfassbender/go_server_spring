@@ -2,10 +2,17 @@ package net.jfabricationgames.go.db.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import net.jfabricationgames.go.game.Game;
@@ -45,11 +52,27 @@ public class GameRepository implements IGameRepository {
 	}
 	
 	@Override
-	public void save(Game game) {
-		jdbc.update("INSERT INTO games (" + GAME_FIELDS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", game.getId(), game.getPlayerBlack(),
-				game.getPlayerWhite(), game.getMovesAsString(), game.getStarted(), game.getLastPlayed(), game.getBoardSize(), game.isResigned(),
-				game.getPoints(), game.isOver(), game.getHandycap(), game.getComi());
+	public Game create(Game game) {
+		game.setStarted(LocalDate.now());
+		//insert the game and get the id in the database
+		PreparedStatementCreator psc = new PreparedStatementCreatorFactory(
+				"INSERT INTO games (" + GAME_FIELDS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Types.INTEGER, Types.INTEGER, Types.INTEGER,
+				Types.VARCHAR, Types.DATE, Types.DATE, Types.BOOLEAN, Types.FLOAT, Types.BOOLEAN, Types.INTEGER, Types.FLOAT)
+						.newPreparedStatementCreator(Arrays.asList(game.getId(), game.getPlayerBlack(), game.getPlayerWhite(),
+								game.getMovesAsString(), game.getStarted(), game.getLastPlayed(), game.getBoardSize(), game.isResigned(),
+								game.getPoints(), game.isOver(), game.getHandycap(), game.getComi()));
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbc.update(psc, keyHolder);
 		
+		game.setId(keyHolder.getKey().intValue());
+		
+		return game;
+	}
+	
+	@Override
+	public void update(Game game) {
+		jdbc.update("UPDATE games SET moves = ?, last_played_on = ?, resign = ?, points = ?, over = ? WHERE id = ?", game.getMovesAsString(),
+				game.getLastPlayed(), game.isResigned(), game.getPoints(), game.isOver(), game.getId());
 	}
 	
 	/**

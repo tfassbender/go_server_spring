@@ -1,11 +1,13 @@
 package net.jfabricationgames.go.game;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.jfabricationgames.go.server.data.GameCreation;
 
 @Data
 @NoArgsConstructor
@@ -40,5 +42,14 @@ public class Game {
 	public String getMovesAsString() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public void startGame(GameCreation gameCreation) {
+		moves = new ArrayList<Move>();
+		boardSize = gameCreation.getBoardSize();
+		comi = gameCreation.getComi();
+		handycap = gameCreation.getHandycap();
+		resigned = false;
+		over = false;
 	}
 }
