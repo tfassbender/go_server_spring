@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import net.jfabricationgames.go.game.Game;
+import net.jfabricationgames.go.server.data.User;
 
 @Repository
 public class GameRepositoryImpl implements GameRepository {
@@ -26,10 +27,12 @@ public class GameRepositoryImpl implements GameRepository {
 			+ "board_size, resign, points, over, handycap, comi";
 	
 	private final JdbcTemplate jdbc;
+	private final UserRepository userRepository;
 	
 	@Autowired
-	public GameRepositoryImpl(JdbcTemplate jdbc) {
+	public GameRepositoryImpl(JdbcTemplate jdbc, UserRepository userRepository) {
 		this.jdbc = jdbc;
+		this.userRepository = userRepository;
 	}
 	
 	@Override
@@ -66,7 +69,7 @@ public class GameRepositoryImpl implements GameRepository {
 		factory.setReturnGeneratedKeys(true);
 		
 		PreparedStatementCreator psc = factory.newPreparedStatementCreator(
-				Arrays.asList(game.getPlayerBlack(), game.getPlayerWhite(), game.getMovesAsString(), game.getStarted(), game.getLastPlayed(),
+				Arrays.asList(game.getPlayerBlack().getId(), game.getPlayerWhite().getId(), game.getMoves(), game.getStarted(), game.getLastPlayed(),
 						game.getBoardSize(), game.isResigned(), game.getPoints(), game.isOver(), game.getHandycap(), game.getComi()));
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -79,7 +82,7 @@ public class GameRepositoryImpl implements GameRepository {
 	
 	@Override
 	public void update(Game game) {
-		jdbc.update("UPDATE games SET moves = ?, last_played_on = ?, resign = ?, points = ?, over = ? WHERE id = ?", game.getMovesAsString(),
+		jdbc.update("UPDATE games SET moves = ?, last_played_on = ?, resign = ?, points = ?, over = ? WHERE id = ?", game.getMoves(),
 				game.getLastPlayed(), game.isResigned(), game.getPoints(), game.isOver(), game.getId());
 	}
 	
@@ -87,8 +90,18 @@ public class GameRepositoryImpl implements GameRepository {
 	 * Build a Game object from a result set in the database
 	 */
 	private Game mapRowToGame(ResultSet rs, int row) throws SQLException {
-		return new Game(rs.getInt("id"), rs.getDate("started_on").toLocalDate(), rs.getDate("last_played_on").toLocalDate(),
-				rs.getLong("player_black"), rs.getLong("player_white"), Game.fromMoveString(rs.getString("moves")), rs.getInt("board_size"),
-				rs.getBoolean("resigned"), rs.getBoolean("over"), rs.getDouble("points"), rs.getDouble("comi"), rs.getInt("handycap"));
+		int playerBlackId = rs.getInt("player_black");
+		int playerWhiteId = rs.getInt("player_white");
+		
+		//get the players from the database
+		User playerBlack = userRepository.findById(playerBlackId)
+				.orElseThrow(() -> new SQLException("User for player_black not found. Id was " + playerBlackId));
+		User playerWhite = userRepository.findById(playerWhiteId)
+				.orElseThrow(() -> new SQLException("User for player_white not found. Id was " + playerWhiteId));
+		
+		//create the game from the database entry
+		return new Game(rs.getInt("id"), rs.getDate("started_on").toLocalDate(), rs.getDate("last_played_on").toLocalDate(), playerBlack, playerWhite,
+				rs.getString("moves"), null, rs.getInt("board_size"), rs.getBoolean("resigned"), rs.getBoolean("over"), rs.getDouble("points"),
+				rs.getDouble("comi"), rs.getInt("handycap"));
 	}
 }

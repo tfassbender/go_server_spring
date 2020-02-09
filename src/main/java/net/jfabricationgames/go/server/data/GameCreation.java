@@ -4,12 +4,16 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import lombok.Data;
 
 @Data
 public class GameCreation {
 	
+	@NotNull(message = "Choose an opponent player")
+	@Size(min = 3, message = "Invalid username (usernames have at least 3 characters)")
+	private String opponentPlayer;
 	@NotNull(message = "Choose either black or white")
 	@Pattern(regexp = "black|white", message = "Choose either black or white")
 	private String color;

@@ -14,6 +14,13 @@
 		for the error displaying to work (or changes in the controller are needed) -->
 
 		<div class="grid">
+			<h4>Select the opponent player (by username):</h4>
+			<div id="select_opponent">
+				<input type="text" th:field="*{opponentPlayer}" /> <span
+					class="validationError" th:if="${#fields.hasErrors('opponentPlayer')}"
+					th:errors="*{opponentPlayer}">Opponent Player Error</span>
+			</div>
+
 			<h4>Select your color:</h4>
 			<div id="select_color">
 				<table>
