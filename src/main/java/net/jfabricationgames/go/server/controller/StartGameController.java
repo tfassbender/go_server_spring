@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import lombok.extern.slf4j.Slf4j;
+import net.jfabricationgames.go.Page;
 import net.jfabricationgames.go.db.repository.IGameRepository;
 import net.jfabricationgames.go.game.Game;
-import net.jfabricationgames.go.server.Page;
 import net.jfabricationgames.go.server.data.GameCreation;
 
 @Slf4j
@@ -44,8 +44,7 @@ public class StartGameController {
 	}
 	
 	@PostMapping
-	public String processGameCreation(@Valid @ModelAttribute("game_creation") GameCreation gameCreation, @ModelAttribute Game game, Errors errors,
-			Model model) {
+	public String processGameCreation(@Valid @ModelAttribute("game_creation") GameCreation gameCreation, Errors errors, Model model, @ModelAttribute Game game) {
 		if (errors.hasErrors()) {
 			//stay on the page if there are errors
 			return Page.START_GAME.getPageName();

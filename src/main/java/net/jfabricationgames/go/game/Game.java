@@ -14,6 +14,8 @@ import net.jfabricationgames.go.server.data.GameCreation;
 @AllArgsConstructor
 public class Game {
 	
+	//	@Id
+	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	private LocalDate started;
 	private LocalDate lastPlayed;

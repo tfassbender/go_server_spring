@@ -9,13 +9,13 @@ CREATE TABLE IF NOT EXISTS roles (
 );
 
 CREATE TABLE IF NOT EXISTS user_roles (
+	id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	user_id INT NOT NULL REFERENCES users(id),
-	role VARCHAR(100) NOT NULL REFERENCES roles(name),
-	PRIMARY KEY (id, role)
+	role VARCHAR(100) NOT NULL REFERENCES roles(name)
 );
 
 CREATE TABLE IF NOT EXISTS boards (
-	size INT NOT NULL PRIMARY KEY,
+	board_size INT NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS games (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS games (
 	moves TEXT,
 	started_on TIMESTAMP,
 	last_played_on TIMESTAMP,
-	board_size INT NOT NULL REFERENCES boards(size),
+	board_size INT NOT NULL REFERENCES boards(board_size),
 	resign BOOLEAN,
 	points FLOAT,
 	over BOOLEAN,

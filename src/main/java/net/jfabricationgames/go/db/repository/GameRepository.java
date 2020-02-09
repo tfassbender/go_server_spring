@@ -54,13 +54,19 @@ public class GameRepository implements IGameRepository {
 	@Override
 	public Game create(Game game) {
 		game.setStarted(LocalDate.now());
+		
 		//insert the game and get the id in the database
-		PreparedStatementCreator psc = new PreparedStatementCreatorFactory(
+		PreparedStatementCreatorFactory factory = new PreparedStatementCreatorFactory(
 				"INSERT INTO games (" + GAME_FIELDS + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Types.INTEGER, Types.INTEGER, Types.INTEGER,
-				Types.VARCHAR, Types.DATE, Types.DATE, Types.BOOLEAN, Types.FLOAT, Types.BOOLEAN, Types.INTEGER, Types.FLOAT)
-						.newPreparedStatementCreator(Arrays.asList(game.getId(), game.getPlayerBlack(), game.getPlayerWhite(),
-								game.getMovesAsString(), game.getStarted(), game.getLastPlayed(), game.getBoardSize(), game.isResigned(),
-								game.getPoints(), game.isOver(), game.getHandycap(), game.getComi()));
+				Types.VARCHAR, Types.DATE, Types.DATE, Types.INTEGER, Types.BOOLEAN, Types.FLOAT, Types.BOOLEAN, Types.INTEGER, Types.FLOAT);
+		
+		//return the key that was generated to set the id
+		factory.setReturnGeneratedKeys(true);
+		
+		PreparedStatementCreator psc = factory.newPreparedStatementCreator(Arrays.asList(game.getId(), game.getPlayerBlack(), game.getPlayerWhite(),
+				game.getMovesAsString(), game.getStarted(), game.getLastPlayed(), game.getBoardSize(), game.isResigned(), game.getPoints(),
+				game.isOver(), game.getHandycap(), game.getComi()));
+		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbc.update(psc, keyHolder);
 		

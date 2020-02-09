@@ -1,4 +1,4 @@
-package net.jfabricationgames.go.server;
+package net.jfabricationgames.go;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,24 +9,31 @@ import net.jfabricationgames.go.server.security.Role;
 
 public enum Page {
 	
-	WELCOME("/"),//
-	LOGIN("/login"),//
-	MENU("/menu", Role.USER),//
-	PLAY("/play", Role.USER),//
-	START_GAME("/start_game", Role.USER);
+	WELCOME("/", "home"),//
+	LOGIN("/login", "login"),//
+	MENU("/menu", "menu", Role.USER),//
+	PLAY("/play", "play", Role.USER),//
+	START_GAME("/start_game", "start_game", Role.USER);
 	
 	private final String pageName;
+	private final String templateName;
+	
 	//all roles that can access this page (one of them is required)
 	private final List<Role> requiredRoles;
 	
-	private Page(String pageName, Role... roles) {
+	private Page(String pageName, String templateName, Role... roles) {
 		this.pageName = pageName;
+		this.templateName = templateName;
 		this.requiredRoles = Arrays.asList(roles);
 	}
 	
 	public String getPageName() {
 		return pageName;
 	}
+	public String getTemplateName() {
+		return templateName;
+	}
+	
 	public List<Role> getRequiredRoles() {
 		return requiredRoles;
 	}

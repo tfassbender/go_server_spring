@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-import net.jfabricationgames.go.server.Page;
+import net.jfabricationgames.go.Page;
 
 @Configuration
 @EnableWebSecurity
