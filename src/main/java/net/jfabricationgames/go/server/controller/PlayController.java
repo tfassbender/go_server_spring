@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import net.jfabricationgames.go.db.repository.IGameRepository;
+import net.jfabricationgames.go.db.repository.GameRepository;
 
 @Controller
 @RequestMapping("/play")
@@ -14,10 +14,10 @@ import net.jfabricationgames.go.db.repository.IGameRepository;
 public class PlayController {
 	
 	@SuppressWarnings("unused")
-	private IGameRepository gameRepository;
+	private GameRepository gameRepository;
 	
 	@Autowired
-	public PlayController(IGameRepository gameRepository) {
+	public PlayController(GameRepository gameRepository) {
 		this.gameRepository = gameRepository;
 	}
 	

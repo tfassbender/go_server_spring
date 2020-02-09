@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import lombok.extern.slf4j.Slf4j;
 import net.jfabricationgames.go.Page;
-import net.jfabricationgames.go.db.repository.IGameRepository;
+import net.jfabricationgames.go.db.repository.GameRepository;
 import net.jfabricationgames.go.game.Game;
 import net.jfabricationgames.go.server.data.GameCreation;
 
@@ -24,10 +24,10 @@ import net.jfabricationgames.go.server.data.GameCreation;
 @SessionAttributes("game")
 public class StartGameController {
 	
-	private final IGameRepository gameRepository;
+	private final GameRepository gameRepository;
 	
 	@Autowired
-	public StartGameController(IGameRepository gameRepository) {
+	public StartGameController(GameRepository gameRepository) {
 		this.gameRepository = gameRepository;
 	}
 	

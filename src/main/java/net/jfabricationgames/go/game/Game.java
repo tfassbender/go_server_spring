@@ -10,13 +10,11 @@ import lombok.NoArgsConstructor;
 import net.jfabricationgames.go.server.data.GameCreation;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Game {
 	
-	//	@Id
-	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private int id;
 	private LocalDate started;
 	private LocalDate lastPlayed;
 	

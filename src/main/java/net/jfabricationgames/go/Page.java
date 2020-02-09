@@ -11,6 +11,7 @@ public enum Page {
 	
 	WELCOME("/", "home"),//
 	LOGIN("/login", "login"),//
+	REGISTER("/register", "register"),//
 	MENU("/menu", "menu", Role.USER),//
 	PLAY("/play", "play", Role.USER),//
 	START_GAME("/start_game", "start_game", Role.USER);
