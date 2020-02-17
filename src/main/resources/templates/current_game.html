@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Current Game</title>
+</head>
+<body>
+	<h1>Current game</h1>
+	<h4>Game ID:</h4>
+	<div>
+		<span th:text="${session.game.id}">Game Id</span>
+	</div>
+	<h4>Board size:</h4>
+	<div>
+		<span th:text="${session.game.boardSize}">Board Size</span>
+	</div>
+
+	<h4>Comi:</h4>
+	<div id="comi">
+		<span th:text="${session.game.comi}">Comi</span>
+	</div>
+
+	<h4>Handycap (stones):</h4>
+	<div id="handycap">
+		<span th:text="${session.game.handycap}">Handycap</span>
+	</div>
+	</div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package net.jfabricationgames.go;
+package net.jfabricationgames.go.server;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
