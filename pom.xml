@@ -127,6 +127,13 @@
 							<arguments>build</arguments>
 						</configuration>
 					</execution>
+
+					<execution>
+						<id>webpack build dev</id>
+						<goals>
+							<goal>webpack</goal>
+						</goals>
+					</execution>
 				</executions>
 			</plugin>
 
