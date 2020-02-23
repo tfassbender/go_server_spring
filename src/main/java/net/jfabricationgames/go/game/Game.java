@@ -1,6 +1,7 @@
 package net.jfabricationgames.go.game;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -50,13 +51,66 @@ public class Game {
 	private double comi;
 	private int handycap;
 	
+	private static final String MOVE_STRING_DELEMITER = ";";
+	private static final String MOVE_STRING_NUMBER_DELEMITER = ",";
+	private static final char MOVE_STRING_WHITE = 'W';
+	private static final char MOVE_STRING_BLACK = 'B';
+	private static final char MOVE_STRING_PASS = 'P';
+	
+	/**
+	 * Build a list of moves from a move string.
+	 * 
+	 * Examples for move strings:
+	 * <ul>
+	 * <li>W0,5;  (white on row 0, col 5)</li>
+	 * <li>B5,18; (black on row 5, col 18)</li>
+	 * <li>WP;    (white passed)</li>
+	 * </ul>
+	 */
 	public static List<Move> fromMoveString(String moveString) {
-		//TODO
-		return null;
+		List<Move> moveList = new ArrayList<Move>(moveString.length() / 5);//move strings have a minimum of 5 chars
+		String[] moves = moveString.split(MOVE_STRING_DELEMITER);
+		for (int i = 0; i < moves.length; i++) {
+			if (moves[i].length() > 0) {//prevent empty moves (because the move string could end with ';')
+				Move move = null;
+				//get the player that made the move
+				PlayerColor color = null;
+				if (moves[i].charAt(0) == MOVE_STRING_BLACK) {
+					color = PlayerColor.BLACK;
+				}
+				else if (moves[i].charAt(0) == MOVE_STRING_WHITE) {
+					color = PlayerColor.WHITE;
+				}
+				else {
+					throw new IllegalStateException("Unexpected player color char in movement code: '" + moves[i].charAt(0) + "'");
+				}
+				
+				//check for passing moves
+				if (moves[i].charAt(1) == MOVE_STRING_PASS) {
+					move = Move.getPassMove(color);
+				}
+				else {
+					//get the row and column of the move
+					String fieldCode = moves[i].substring(1);
+					String[] fields = fieldCode.split(MOVE_STRING_NUMBER_DELEMITER);
+					int row = Integer.parseInt(fields[0]);
+					int col = Integer.parseInt(fields[1]);
+					
+					move = new Move(row, col, color);
+				}
+				
+				//add the new move
+				moveList.add(move);
+			}
+		}
+		return moveList;
 	}
+	
 	public List<Move> getMovesAsList() {
-		//TODO
-		return null;
+		if (moveList == null) {
+			moveList = fromMoveString(moves);
+		}
+		return moveList;
 	}
 	
 	public void startGame(GameCreation gameCreation) {
@@ -65,5 +119,10 @@ public class Game {
 		handycap = gameCreation.getHandycap();
 		resigned = false;
 		over = false;
+	}
+	
+	public GameState toGameState() {
+		Referee referee = new Referee(this);
+		return new GameState(referee.getBoardCopy());
 	}
 }
