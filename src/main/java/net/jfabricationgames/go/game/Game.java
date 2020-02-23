@@ -62,9 +62,9 @@ public class Game {
 	 * 
 	 * Examples for move strings:
 	 * <ul>
-	 * <li>W0,5;  (white on row 0, col 5)</li>
+	 * <li>W0,5; (white on row 0, col 5)</li>
 	 * <li>B5,18; (black on row 5, col 18)</li>
-	 * <li>WP;    (white passed)</li>
+	 * <li>WP; (white passed)</li>
 	 * </ul>
 	 */
 	public static List<Move> fromMoveString(String moveString) {
@@ -124,5 +124,47 @@ public class Game {
 	public GameState toGameState() {
 		Referee referee = new Referee(this);
 		return new GameState(referee.getBoardCopy());
+	}
+	
+	/**
+	 * Check whether the move is valid and execute it if it's valid.
+	 */
+	public void makeMove(Move move) throws IllegalArgumentException {
+		Referee referee = new Referee(this);
+		if (referee.isValidMove(move)) {
+			addMove(move);
+		}
+		else {
+			throw new IllegalArgumentException("the move is not valid");
+		}
+	}
+	
+	/**
+	 * Add a move without checking whether it's valid.
+	 */
+	public void addMove(Move move) {
+		moveList.add(move);
+		moves += toMoveString(move);
+	}
+
+	private String toMoveString(Move move) {
+		StringBuilder sb = new StringBuilder();
+		if (move.getColor() == PlayerColor.BLACK) {
+			sb.append(MOVE_STRING_BLACK);
+		}
+		else {
+			sb.append(MOVE_STRING_WHITE);
+		}
+		if (move.isPass()) {
+			sb.append(MOVE_STRING_PASS);
+		}
+		else {
+			sb.append(move.getRow());
+			sb.append(MOVE_STRING_NUMBER_DELEMITER);
+			sb.append(move.getCol());
+		}
+		sb.append(MOVE_STRING_DELEMITER);
+		
+		return sb.toString();
 	}
 }

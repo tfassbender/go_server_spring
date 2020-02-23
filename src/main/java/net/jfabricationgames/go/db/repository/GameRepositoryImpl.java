@@ -41,18 +41,18 @@ public class GameRepositoryImpl implements GameRepository {
 	}
 	
 	@Override
-	public List<Game> findByUser(long userId) {
+	public List<Game> findByUser(int userId) {
 		return jdbc.query("SELECT " + GAME_FIELDS + " FROM games WHERE id = ?", this::mapRowToGame, userId);
 	}
 	
 	@Override
 	public List<Game> findByUser(String username) throws SQLException {
-		long userId = jdbc.queryForObject("SELECT id FROM users WHERE name = ?", (rs, row) -> rs.getLong("id"), username);
+		int userId = jdbc.queryForObject("SELECT id FROM users WHERE name = ?", (rs, row) -> rs.getInt("id"), username);
 		return findByUser(userId);
 	}
 	
 	@Override
-	public Game findById(long gameId) {
+	public Game findById(int gameId) {
 		return jdbc.queryForObject("SELECT " + GAME_FIELDS + " FROM games WHERE id = ?", this::mapRowToGame, gameId);
 	}
 	

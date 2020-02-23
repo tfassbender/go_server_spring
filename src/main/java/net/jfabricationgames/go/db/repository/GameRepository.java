@@ -8,9 +8,9 @@ import net.jfabricationgames.go.game.Game;
 public interface GameRepository {
 	
 	public List<Game> findAll();
-	public List<Game> findByUser(long userId);
+	public List<Game> findByUser(int userId);
 	public List<Game> findByUser(String username) throws SQLException;
-	public Game findById(long gameId);
+	public Game findById(int gameId);
 	
 	public Game create(Game game);
 	public void update(Game game);
