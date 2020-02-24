@@ -24,7 +24,7 @@ import net.jfabricationgames.go.game.GameState;
 import net.jfabricationgames.go.game.Move;
 import net.jfabricationgames.go.game.PlayerColor;
 
-@RestController
+@RestController("react_test_controller")//name of the bean is needed here!
 @RequestMapping(path = "/react_test", produces = "application/json")
 @AllArgsConstructor
 public class ReactTestController {
@@ -76,7 +76,7 @@ public class ReactTestController {
 		Move move = new Move(row, col, playersTurn);
 		game.makeMove(move);
 		
-		gameCrudRepo.save(game);
+		gameRepo.update(game);
 		return game.toGameState();
 	}
 }
