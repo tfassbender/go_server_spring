@@ -86,6 +86,11 @@ public class GameRepositoryImpl implements GameRepository {
 				game.getLastPlayed(), game.isResigned(), game.getPoints(), game.isOver(), game.getId());
 	}
 	
+	@Override
+	public void delete(int gameId) {
+		jdbc.update("DELETE FROM games WHERE id = ?", gameId);
+	}
+	
 	/**
 	 * Build a Game object from a result set in the database
 	 */
@@ -101,7 +106,7 @@ public class GameRepositoryImpl implements GameRepository {
 		
 		//create the game from the database entry
 		return new Game(rs.getInt("id"), rs.getDate("started_on").toLocalDate(), rs.getDate("last_played_on").toLocalDate(), playerBlack, playerWhite,
-				rs.getString("moves"), null, rs.getInt("board_size"), rs.getBoolean("resigned"), rs.getBoolean("over"), rs.getDouble("points"),
+				rs.getString("moves"), null, rs.getInt("board_size"), rs.getBoolean("resign"), rs.getBoolean("over"), rs.getDouble("points"),
 				rs.getDouble("comi"), rs.getInt("handycap"));
 	}
 }

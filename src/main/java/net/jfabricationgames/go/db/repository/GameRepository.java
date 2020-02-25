@@ -14,4 +14,5 @@ public interface GameRepository {
 	
 	public Game create(Game game);
 	public void update(Game game);
+	public void delete(int gameId);
 }

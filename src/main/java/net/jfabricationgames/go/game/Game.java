@@ -123,7 +123,7 @@ public class Game {
 	
 	public GameState toGameState() {
 		Referee referee = new Referee(this);
-		return new GameState(referee.getBoardCopy());
+		return new GameState(id, referee.getBoardCopy());
 	}
 	
 	/**
@@ -146,7 +146,7 @@ public class Game {
 		moveList.add(move);
 		moves += toMoveString(move);
 	}
-
+	
 	private String toMoveString(Move move) {
 		StringBuilder sb = new StringBuilder();
 		if (move.getColor() == PlayerColor.BLACK) {

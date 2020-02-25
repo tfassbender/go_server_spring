@@ -36,7 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				
 				//add a logout form
 				.and().logout().logoutSuccessUrl("/logged_out");
-		
+
+		//TODO re-enable CSRF after tests
+		http.csrf().disable();
 	}
 	
 	@Override

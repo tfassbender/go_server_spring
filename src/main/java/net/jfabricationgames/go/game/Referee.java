@@ -34,12 +34,14 @@ public class Referee {
 	 */
 	@VisibleForTesting
 	/*private*/ void fillBoard(List<Move> moves) throws IllegalArgumentException {
-		for (Move move : moves) {
-			if (isValidMove(move)) {
-				addMove(move);
-			}
-			else {
-				throw new IllegalArgumentException("Invalid move. The given list of moves contains a move that is not valid: " + move);
+		if (moves != null) {
+			for (Move move : moves) {
+				if (isValidMove(move)) {
+					addMove(move);
+				}
+				else {
+					throw new IllegalArgumentException("Invalid move. The given list of moves contains a move that is not valid: " + move);
+				}
 			}
 		}
 	}

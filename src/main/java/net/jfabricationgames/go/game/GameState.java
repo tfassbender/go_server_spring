@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class GameState {
 	
+	private Integer id;
 	private PlayerColor[][] state;
 }
