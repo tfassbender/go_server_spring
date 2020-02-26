@@ -1,14 +1,9 @@
 import React from 'react';
 
-export default function GoControllerComponent() {
+export default function GoControllerComponent({setGameState}) {
 	const [id, setId] = React.useState(0);
 	
 	const urlGames = "react_test/games";// add "/{id}" for load and delete
-	
-	function setGameState(gameState) {
-		// TODO
-		alert("setting game state: " + gameState);
-	}
 	
 	function createGame() {
 		let xhttp = new XMLHttpRequest();
@@ -17,8 +12,11 @@ export default function GoControllerComponent() {
 				let gameState = JSON.parse(this.responseText);
 				let gameId = gameState.id;
 				setId(gameId);
+				
+				// load the new game to set the correct game state
+				loadGame(gameId);
 			}
-			else if (this.readyState === 4 && this.status != 201) {
+			else if (this.readyState === 4 && this.status !== 201) {
 				alert("something went wrong while creating the game: readyState = " + this.readyState + " status = " + this.status);
 			}
 		};
@@ -26,18 +24,30 @@ export default function GoControllerComponent() {
 		xhttp.send();
 	}
 	
-	function loadGame() {
+	function loadCurrentGame() {
+		loadGame(id);
+	}
+	function loadGame(gameId) {
+		console.log("loading game: " + gameId);
+		
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
 			if (this.readyState === 4 && this.status === 200) {
 				let gameState = JSON.parse(this.responseText);
+				
+				// console.log(this.responseText);
+				// console.log(gameState);
+				
 				setGameState(gameState);
 			}
-			else if (this.readyState === 4 && this.status != 200) {
+			else if (this.readyState === 4 && this.status === 404) {
+				alert("a game with this id was not found (id was: " + gameId + ")");
+			}
+			else if (this.readyState === 4) {
 				alert("something went wrong while loading the game: readyState = " + this.readyState + " status = " + this.status);
 			}
 		};
-		let url = urlGames + "/" + id;
+		let url = urlGames + "/" + gameId;
 		xhttp.open("GET", url);
 		xhttp.send();
 	}
@@ -45,13 +55,13 @@ export default function GoControllerComponent() {
 	function deleteGame() {
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
-			if (this.readyState == 4) {
-				if (this.status != 204) {
+			if (this.readyState === 4) {
+				if (this.status !== 204) {
 					alert("something went wrong while deleting the game: readyState = " + this.readyState + " status = " + this.status);					
 				}
 				else {
 					setId(0);
-					setGameState(0);					
+					setGameState(null);					
 				}
 			}
 		};
@@ -70,7 +80,7 @@ export default function GoControllerComponent() {
 				<td><button onClick={createGame}>Create Game</button></td>
 			</tr>
 			<tr>
-				<td><button onClick={loadGame}>Load Game</button></td>
+				<td><button onClick={loadCurrentGame}>Load Game</button></td>
 			</tr>
 			<tr>
 				<td><button onClick={deleteGame}>Delete Game</button></td>

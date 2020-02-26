@@ -123,7 +123,7 @@ public class Game {
 	
 	public GameState toGameState() {
 		Referee referee = new Referee(this);
-		return new GameState(id, referee.getBoardCopy());
+		return new GameState(id, referee.getBoardCopy(), referee.getNextMoveColor());
 	}
 	
 	/**
@@ -143,6 +143,9 @@ public class Game {
 	 * Add a move without checking whether it's valid.
 	 */
 	public void addMove(Move move) {
+		if (moveList == null) {
+			moveList = new ArrayList<Move>();
+		}
 		moveList.add(move);
 		moves += toMoveString(move);
 	}

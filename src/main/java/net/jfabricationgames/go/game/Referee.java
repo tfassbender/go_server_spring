@@ -5,6 +5,13 @@ import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@EqualsAndHashCode
+@ToString
 public class Referee {
 	
 	private Game game;
@@ -16,6 +23,8 @@ public class Referee {
 	
 	public Referee(Game game) {
 		this.game = game;
+		//to load the move list from the string representation
+		this.game.getMovesAsList();
 		board = new PlayerColor[game.getBoardSize()][game.getBoardSize()];
 		
 		//if there are no stones set BLACK starts (lastMove is WHITE)
@@ -72,8 +81,10 @@ public class Referee {
 	 * </ul>
 	 */
 	public boolean isValidMove(Move move) {
+		//log.info("Referee: {}", this);
 		if (move.getColor() != PlayerColor.getOpposizeColor(lastMove)) {
 			//wrong color
+			log.info("invalid move: wrong color");
 			return false;
 		}
 		if (move.isPass()) {
@@ -83,10 +94,12 @@ public class Referee {
 		else {//no passing move
 			if (!move.getPos().exists(getBoardSize())) {
 				//position doesn't exist
+				log.info("invalid move: position doesn't exist");
 				return false;
 			}
 			if (getStoneColor(move.getPos()) != null) {
 				//field not empty
+				log.info("invalid move: field not empty");
 				return false;
 			}
 			
@@ -101,12 +114,14 @@ public class Referee {
 			if (group.isBeaten(this)) {
 				//added stone is directly beaten
 				board = tmpBoard;
+				log.info("invalid move: stone would directly be beaten");
 				return false;
 			}
 			
 			if (boardsEqual(board, previousBoard)) {
 				//restores the board from the last move (ko rule violated)
 				board = tmpBoard;
+				log.info("invalid move: ko rule violation");
 				return false;
 			}
 			
@@ -117,6 +132,11 @@ public class Referee {
 	
 	@VisibleForTesting
 	/*private*/ static boolean boardsEqual(PlayerColor[][] board, PlayerColor[][] previousBoard) {
+		if (previousBoard == null) {
+			//previousBoard can be null if there was no previous move
+			//in this case the ko-rule can't be violated and the boards are treated as not equal (so false is returned)
+			return false;
+		}
 		boolean equal = true;
 		for (int i = 0; i < board.length; i++) {
 			for (int j = 0; j < board[0].length; j++) {
@@ -168,6 +188,13 @@ public class Referee {
 		for (FieldPosition pos : stones) {
 			board[pos.getRow()][pos.getCol()] = null;
 		}
+	}
+	
+	public PlayerColor getLastMoveColor() {
+		return lastMove;
+	}
+	public PlayerColor getNextMoveColor() {
+		return PlayerColor.getOpposizeColor(lastMove);
 	}
 	
 	public boolean isFieldEmpty(FieldPosition pos) {

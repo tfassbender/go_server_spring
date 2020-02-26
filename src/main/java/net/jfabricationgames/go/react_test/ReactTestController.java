@@ -1,14 +1,16 @@
 package net.jfabricationgames.go.react_test;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,7 +23,6 @@ import net.jfabricationgames.go.db.repository.UserRepository;
 import net.jfabricationgames.go.game.Game;
 import net.jfabricationgames.go.game.GameState;
 import net.jfabricationgames.go.game.Move;
-import net.jfabricationgames.go.game.PlayerColor;
 import net.jfabricationgames.go.server.data.User;
 
 @RestController("react_test_controller")//name of the bean is needed here!
@@ -43,9 +44,18 @@ public class ReactTestController {
 	private UserRepository userRepo;
 	
 	@GetMapping("/games/{id}")
-	public GameState getGameState(@PathVariable("id") Integer id) {
+	public ResponseEntity<GameState> getGameState(@PathVariable("id") Integer id) {
 		log.info("loading game with id: {}", id);
-		return gameRepo.findById(id).toGameState();
+		try {
+			Game game = gameRepo.findById(id);
+			GameState gameState = game.toGameState();
+			
+			ResponseEntity<GameState> entity = new ResponseEntity<GameState>(gameState, HttpStatus.OK);
+			return entity;
+		}
+		catch (DataAccessException dae) {
+			return new ResponseEntity<GameState>(HttpStatus.NOT_FOUND);
+		}
 	}
 	
 	@PostMapping("/games")
@@ -71,23 +81,27 @@ public class ReactTestController {
 	@DeleteMapping("/games/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteGame(@PathVariable("id") Integer id) {
+		log.info("deleting game: id={}", id);
 		gameRepo.delete(id);
 	}
 	
-	@RequestMapping(value = "/games/{id}/move/{row}/{col}", method = {RequestMethod.POST, RequestMethod.PUT})
+	@RequestMapping(value = "/games/{id}/move", method = {RequestMethod.POST, RequestMethod.PUT})
 	@ResponseStatus(HttpStatus.CREATED)
-	public GameState makeMove(@PathVariable("id") int id, @PathVariable("row") int row, @PathVariable("col") int col) {
+	public ResponseEntity<GameState> makeMove(@PathVariable("id") int id, @RequestBody Move move) {
+		log.info("received move: id={} move={}", id, move);
 		Game game = gameRepo.findById(id);
-		List<Move> moveList = game.getMoveList();
-		PlayerColor playersTurn = PlayerColor.getOpposizeColor(moveList.get(moveList.size() - 1).getColor());
-		if (playersTurn == null) {
-			playersTurn = PlayerColor.BLACK;//black player starts
+		try {
+			game.makeMove(move);
 		}
-		
-		Move move = new Move(row, col, playersTurn);
-		game.makeMove(move);
+		catch (IllegalArgumentException iae) {
+			log.error("error while making the move", iae);
+			return new ResponseEntity<GameState>(HttpStatus.BAD_REQUEST);
+		}
+		log.info("move executed");
 		
 		gameRepo.update(game);
-		return game.toGameState();
+		GameState gameState = game.toGameState();
+		ResponseEntity<GameState> entity = new ResponseEntity<>(gameState, HttpStatus.CREATED);
+		return entity;
 	}
 }

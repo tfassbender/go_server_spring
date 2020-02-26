@@ -9,4 +9,5 @@ public class GameState {
 	
 	private Integer id;
 	private PlayerColor[][] state;
+	private PlayerColor playersTurn;
 }
