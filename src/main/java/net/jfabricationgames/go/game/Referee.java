@@ -19,7 +19,8 @@ public class Referee {
 	private PlayerColor[][] board;
 	private PlayerColor[][] previousBoard;
 	
-	private PlayerColor lastMove;
+	private PlayerColor lastMoveColor;
+	private Move lastMove;
 	
 	public Referee(Game game) {
 		this.game = game;
@@ -29,12 +30,16 @@ public class Referee {
 		
 		//if there are no stones set BLACK starts (lastMove is WHITE)
 		if (game.getHandycap() == 0) {
-			lastMove = PlayerColor.WHITE;
+			lastMoveColor = PlayerColor.WHITE;
 		}
 		else {
-			lastMove = PlayerColor.BLACK;
+			lastMoveColor = PlayerColor.BLACK;
 		}
 		
+		//reset the captured stones because the moves will be executed again
+		game.setBlackStonesCaptured(0);
+		game.setWhiteStonesCaptured(0);
+		//fill the board my making all moves again
 		fillBoard(game.getMoveList());
 	}
 	
@@ -82,7 +87,12 @@ public class Referee {
 	 */
 	public boolean isValidMove(Move move) {
 		//log.info("Referee: {}", this);
-		if (move.getColor() != PlayerColor.getOpposizeColor(lastMove)) {
+		if (game.isOver()) {
+			//game over
+			log.info("invalid move: the game is over");
+			return false;
+		}
+		if (move.getColor() != PlayerColor.getOpposizeColor(lastMoveColor)) {
 			//wrong color
 			log.info("invalid move: wrong color");
 			return false;
@@ -150,16 +160,24 @@ public class Referee {
 	 * Execute a move without checking whether it's valid. The new stone is added and beaten ones are removed
 	 */
 	public void addMove(Move move) {
-		//copy the board to the previous board field
-		previousBoard = getBoardCopy();
-		
-		//set the new stone
-		board[move.getRow()][move.getCol()] = move.getColor();
-		//remove beaten stones (if any)
-		removeBeaten(move);
+		if (!move.isPass()) {
+			//copy the board to the previous board field
+			previousBoard = getBoardCopy();
+			
+			//set the new stone
+			board[move.getRow()][move.getCol()] = move.getColor();
+			//remove beaten stones (if any)
+			removeBeaten(move, true);
+		}
 		
 		//set the last move color
-		lastMove = move.getColor();
+		lastMoveColor = move.getColor();
+		
+		if (move.isPass() && lastMove != null && lastMove.isPass()) {
+			//both players passed -> game over
+			game.setOver(true);
+		}
+		lastMove = move;
 	}
 	
 	/**
@@ -167,6 +185,9 @@ public class Referee {
 	 */
 	@VisibleForTesting
 	/*private*/ void removeBeaten(Move move) {
+		removeBeaten(move, false);
+	}
+	private void removeBeaten(Move move, boolean countBeaten) {
 		//find the fields near to the move field
 		List<FieldPosition> near = move.getPos().getFieldsNear(game.getBoardSize());
 		for (FieldPosition pos : near) {
@@ -174,7 +195,7 @@ public class Referee {
 			if (getStoneColor(pos) == PlayerColor.getOpposizeColor(move.getColor())) {
 				Group group = Group.findGroup(this, pos);
 				if (group.isBeaten(this)) {
-					removeStones(group.getStones());
+					removeStones(group.getStones(), countBeaten);
 				}
 			}
 		}
@@ -185,16 +206,31 @@ public class Referee {
 	 */
 	@VisibleForTesting
 	/*private*/ void removeStones(Collection<FieldPosition> stones) {
+		removeStones(stones, false);
+	}
+	private void removeStones(Collection<FieldPosition> stones, boolean countBeaten) {
+		int stonesBeaten = stones.size();
+		PlayerColor beatenStonesColor = null;
 		for (FieldPosition pos : stones) {
+			beatenStonesColor = board[pos.getRow()][pos.getCol()];
 			board[pos.getRow()][pos.getCol()] = null;
+		}
+		
+		if (countBeaten) {
+			if (beatenStonesColor == PlayerColor.BLACK) {
+				game.setBlackStonesCaptured(game.getBlackStonesCaptured() + stonesBeaten);
+			}
+			else if (beatenStonesColor == PlayerColor.WHITE) {
+				game.setWhiteStonesCaptured(game.getWhiteStonesCaptured() + stonesBeaten);
+			}
 		}
 	}
 	
 	public PlayerColor getLastMoveColor() {
-		return lastMove;
+		return lastMoveColor;
 	}
 	public PlayerColor getNextMoveColor() {
-		return PlayerColor.getOpposizeColor(lastMove);
+		return PlayerColor.getOpposizeColor(lastMoveColor);
 	}
 	
 	public boolean isFieldEmpty(FieldPosition pos) {
@@ -214,7 +250,7 @@ public class Referee {
 	}
 	@VisibleForTesting
 	/*private*/ void setPlayersTurn(PlayerColor playersTurn) {
-		this.lastMove = PlayerColor.getOpposizeColor(playersTurn);
+		this.lastMoveColor = PlayerColor.getOpposizeColor(playersTurn);
 	}
 	@VisibleForTesting
 	/*private*/ void setPreviouseBoard(PlayerColor[][] board) {

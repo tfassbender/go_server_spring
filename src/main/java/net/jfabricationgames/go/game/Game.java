@@ -51,6 +51,9 @@ public class Game {
 	private double comi;
 	private int handycap;
 	
+	private int blackStonesCaptured;
+	private int whiteStonesCaptured;
+	
 	private static final String MOVE_STRING_DELEMITER = ";";
 	private static final String MOVE_STRING_NUMBER_DELEMITER = ",";
 	private static final char MOVE_STRING_WHITE = 'W';
@@ -108,6 +111,9 @@ public class Game {
 	
 	public List<Move> getMovesAsList() {
 		if (moveList == null) {
+			if (moves == null) {
+				moves = "";
+			}
 			moveList = fromMoveString(moves);
 		}
 		return moveList;
@@ -123,7 +129,7 @@ public class Game {
 	
 	public GameState toGameState() {
 		Referee referee = new Referee(this);
-		return new GameState(id, referee.getBoardCopy(), referee.getNextMoveColor());
+		return new GameState(id, referee.getBoardCopy(), referee.getNextMoveColor(), over, points, comi, blackStonesCaptured, whiteStonesCaptured);
 	}
 	
 	/**
@@ -148,6 +154,27 @@ public class Game {
 		}
 		moveList.add(move);
 		moves += toMoveString(move);
+	}
+	
+	/**
+	 * Calculate the total points by the current comi, the current captured stones and the counted points in the GameResult object
+	 */
+	public void calculatePoints(GameResult countedPoints) {
+		int pointsBlack = countedPoints.getPointsBlack();
+		int pointsWhite = countedPoints.getPointsWhite();
+		
+		points = pointsBlack - pointsWhite - comi + whiteStonesCaptured - blackStonesCaptured;
+	}
+	
+	public GameResult getResult() {
+		PlayerColor winner = null;
+		if (points < 0) {
+			winner = PlayerColor.WHITE;
+		}
+		else if (points > 0) {
+			winner = PlayerColor.BLACK;
+		}
+		return new GameResult(0, 0, blackStonesCaptured, whiteStonesCaptured, comi, points, winner);
 	}
 	
 	private String toMoveString(Move move) {

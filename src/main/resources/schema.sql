@@ -41,5 +41,7 @@ CREATE TABLE IF NOT EXISTS games (
 	points FLOAT,
 	over BOOLEAN,
 	handycap INT,
-	comi FLOAT
+	comi FLOAT,
+	black_stones_captured INT,
+	white_stones_captured INT
 );

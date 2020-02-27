@@ -2,10 +2,14 @@ import React from 'react';
 
 export default function GoControllerComponent({setGameState}) {
 	const [id, setId] = React.useState(0);
+	const [comi, setComi] = React.useState(5.5);
 	
 	const urlGames = "react_test/games";// add "/{id}" for load and delete
 	
 	function createGame() {
+		let gameCreation = {
+				comi: comi
+		};
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
 			if (this.readyState === 4 && this.status === 201) {
@@ -21,7 +25,8 @@ export default function GoControllerComponent({setGameState}) {
 			}
 		};
 		xhttp.open("POST", urlGames);
-		xhttp.send();
+		xhttp.setRequestHeader("Content-Type", "application/json");
+		xhttp.send(JSON.stringify(gameCreation));
 	}
 	
 	function loadCurrentGame() {
@@ -73,11 +78,15 @@ export default function GoControllerComponent({setGameState}) {
 	return <div>
 		<table>
 			<tr>
-				<td><label htmlFor="id">Game ID:</label></td>
-				<td><input type="number" value={id} onInput={e => setId(e.target.value)} /></td>
+				<td><label htmlFor="comi">Comi:</label></td>
+				<td><input type="number" value={comi} onInput={e => setComi(e.target.value)} /></td>
 			</tr>
 			<tr>
 				<td><button onClick={createGame}>Create Game</button></td>
+			</tr>
+			<tr>
+				<td><label htmlFor="id">Game ID:</label></td>
+				<td><input type="number" value={id} onInput={e => setId(e.target.value)} /></td>
 			</tr>
 			<tr>
 				<td><button onClick={loadCurrentGame}>Load Game</button></td>
