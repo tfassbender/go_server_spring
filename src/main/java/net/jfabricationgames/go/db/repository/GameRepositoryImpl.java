@@ -22,9 +22,9 @@ import net.jfabricationgames.go.server.data.User;
 public class GameRepositoryImpl implements GameRepository {
 	
 	private static final String GAME_FIELDS = "id, player_black, player_white, moves, started_on, last_played_on, "
-			+ "board_size, resign, points, over, handycap, comi";
+			+ "board_size, resign, points, over, handycap, comi, black_stones_captured, white_stones_captured";
 	private static final String GAME_FIELDS_NO_ID = "player_black, player_white, moves, started_on, last_played_on, "
-			+ "board_size, resign, points, over, handycap, comi";
+			+ "board_size, resign, points, over, handycap, comi, black_stones_captured, white_stones_captured";
 	
 	private final JdbcTemplate jdbc;
 	private final UserRepository userRepository;
@@ -41,18 +41,18 @@ public class GameRepositoryImpl implements GameRepository {
 	}
 	
 	@Override
-	public List<Game> findByUser(long userId) {
+	public List<Game> findByUser(int userId) {
 		return jdbc.query("SELECT " + GAME_FIELDS + " FROM games WHERE id = ?", this::mapRowToGame, userId);
 	}
 	
 	@Override
 	public List<Game> findByUser(String username) throws SQLException {
-		long userId = jdbc.queryForObject("SELECT id FROM users WHERE name = ?", (rs, row) -> rs.getLong("id"), username);
+		int userId = jdbc.queryForObject("SELECT id FROM users WHERE name = ?", (rs, row) -> rs.getInt("id"), username);
 		return findByUser(userId);
 	}
 	
 	@Override
-	public Game findById(long gameId) {
+	public Game findById(int gameId) {
 		return jdbc.queryForObject("SELECT " + GAME_FIELDS + " FROM games WHERE id = ?", this::mapRowToGame, gameId);
 	}
 	
@@ -62,15 +62,16 @@ public class GameRepositoryImpl implements GameRepository {
 		
 		//insert the game and get the id in the database (therefore there must be NO ID TO BE INSERTED here)
 		PreparedStatementCreatorFactory factory = new PreparedStatementCreatorFactory(
-				"INSERT INTO games (" + GAME_FIELDS_NO_ID + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Types.INTEGER, Types.INTEGER, Types.VARCHAR,
-				Types.DATE, Types.DATE, Types.INTEGER, Types.BOOLEAN, Types.FLOAT, Types.BOOLEAN, Types.INTEGER, Types.FLOAT);
+				"INSERT INTO games (" + GAME_FIELDS_NO_ID + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Types.INTEGER, Types.INTEGER,
+				Types.VARCHAR, Types.DATE, Types.DATE, Types.INTEGER, Types.BOOLEAN, Types.FLOAT, Types.BOOLEAN, Types.INTEGER, Types.FLOAT,
+				Types.INTEGER, Types.INTEGER);
 		
 		//return the key that was generated to set the id
 		factory.setReturnGeneratedKeys(true);
 		
-		PreparedStatementCreator psc = factory.newPreparedStatementCreator(
-				Arrays.asList(game.getPlayerBlack().getId(), game.getPlayerWhite().getId(), game.getMoves(), game.getStarted(), game.getLastPlayed(),
-						game.getBoardSize(), game.isResigned(), game.getPoints(), game.isOver(), game.getHandycap(), game.getComi()));
+		PreparedStatementCreator psc = factory.newPreparedStatementCreator(Arrays.asList(game.getPlayerBlack().getId(), game.getPlayerWhite().getId(),
+				game.getMoves(), game.getStarted(), game.getLastPlayed(), game.getBoardSize(), game.isResigned(), game.getPoints(), game.isOver(),
+				game.getHandycap(), game.getComi(), game.getBlackStonesCaptured(), game.getWhiteStonesCaptured()));
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbc.update(psc, keyHolder);
@@ -82,8 +83,15 @@ public class GameRepositoryImpl implements GameRepository {
 	
 	@Override
 	public void update(Game game) {
-		jdbc.update("UPDATE games SET moves = ?, last_played_on = ?, resign = ?, points = ?, over = ? WHERE id = ?", game.getMoves(),
-				game.getLastPlayed(), game.isResigned(), game.getPoints(), game.isOver(), game.getId());
+		jdbc.update(
+				"UPDATE games SET moves = ?, last_played_on = ?, resign = ?, points = ?, over = ?, black_stones_captured = ?, white_stones_captured = ? WHERE id = ?",
+				game.getMoves(), game.getLastPlayed(), game.isResigned(), game.getPoints(), game.isOver(), game.getBlackStonesCaptured(),
+				game.getWhiteStonesCaptured(), game.getId());
+	}
+	
+	@Override
+	public void delete(int gameId) {
+		jdbc.update("DELETE FROM games WHERE id = ?", gameId);
 	}
 	
 	/**
@@ -101,7 +109,7 @@ public class GameRepositoryImpl implements GameRepository {
 		
 		//create the game from the database entry
 		return new Game(rs.getInt("id"), rs.getDate("started_on").toLocalDate(), rs.getDate("last_played_on").toLocalDate(), playerBlack, playerWhite,
-				rs.getString("moves"), null, rs.getInt("board_size"), rs.getBoolean("resigned"), rs.getBoolean("over"), rs.getDouble("points"),
-				rs.getDouble("comi"), rs.getInt("handycap"));
+				rs.getString("moves"), null, rs.getInt("board_size"), rs.getBoolean("resign"), rs.getBoolean("over"), rs.getDouble("points"),
+				rs.getDouble("comi"), rs.getInt("handycap"), rs.getInt("black_stones_captured"), rs.getInt("white_stones_captured"));
 	}
 }
