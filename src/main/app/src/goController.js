@@ -78,7 +78,7 @@ export default function GoControllerComponent({setGameState}) {
 	return <div>
 		<table>
 			<tr>
-				<th colspan="2">Create a new Game</th>
+				<th colspan="2" style={{fontSize: "16pt"}}>Create a new Game</th>
 			</tr>
 			<tr>
 				<td><label htmlFor="comi">Comi:</label></td>
@@ -89,7 +89,7 @@ export default function GoControllerComponent({setGameState}) {
 			</tr>
 			<tr style={{height: "10px"}}></tr>
 			<tr>
-				<th colspan="2">Create a new Game</th>
+				<th colspan="2" style={{fontSize: "16pt"}}>Create a new Game</th>
 			</tr>
 			<tr>
 				<td><label htmlFor="id">Game ID:</label></td>

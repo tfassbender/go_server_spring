@@ -5,6 +5,8 @@ import GoStoneFieldComponent from './goStoneField.js';
 export default function GoFieldComponent({gameState, setGameState}) {
 	const [pointsBlack, setPointsBlack] = React.useState(0);
 	const [pointsWhite, setPointsWhite] = React.useState(0);
+	const [playOnlyBlack, setPlayOnlyBlack] = React.useState(false);
+	const [playOnlyWhite, setPlayOnlyWhite] = React.useState(false);
 	
 	const fieldSize = 9;
 	const fieldSizePixels = 700;
@@ -23,7 +25,7 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	var gameOver = false;
 	var points = 0;
 	var comi = 0;
-	var currentGameId = "Game not started yet";
+	var currentGameId = "None (game not started yet)";
 	var nextMoveColor = "None (game not started yet)";
 	
 	if (gameState !== null) {
@@ -40,6 +42,11 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		if (gameOver) {
 			nextMoveColor = "None (game over)";
 		}
+	}
+	
+	if (playOnlyBlack && playOnlyWhite) {
+		setPlayOnlyBlack(false);
+		setPlayOnlyWhite(false);
 	}
 	
 	function createTable() {
@@ -63,7 +70,8 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	        	}
 	        	
 	            children.push(<GoStoneFieldComponent row={i} col={j} gameStateStone={gameStateStone} nextMoveColor={nextMoveColor} 
-	            		setGameState={setGameState} gameId={gameId} gameOver={gameOver}>
+	            		setGameState={setGameState} gameId={gameId} gameOver={gameOver} playOnlyBlack={playOnlyBlack} 
+	            		playOnlyWhite={playOnlyWhite}>
 	            	</GoStoneFieldComponent>);
 	        }
 	        // Create the parent and add the children
@@ -76,6 +84,14 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	function pass() {
 		if (gameState !== null) {
 			if (!gameOver) {
+				if (playOnlyBlack && nextMoveColor === "WHITE") {
+					alert("White's turn (you selected to only play black)");
+					return;
+				}
+				if (playOnlyWhite && nextMoveColor === "BLACK") {
+					alert("Black's turn (you selected to only play white)");
+					return;
+				}
 				let url = "react_test/games/" + gameState.id + "/move";
 				let move = {
 						row: -1,
@@ -121,7 +137,7 @@ export default function GoFieldComponent({gameState, setGameState}) {
 							<td><input type="number" value={pointsWhite} onInput={e => setPointsWhite(e.target.value)}></input></td>
 						</tr>
 					</table>
-					<button onClick={submitPoints}>Submit</button><button onClick={getResult}>Get Result</button>
+					<button onClick={submitPoints}>Submit</button><button onClick={updateGameState}>Get Result</button>
 				</div>;
 		}
 		
@@ -131,7 +147,7 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	function submitPoints() {
 		let urlSubmitResult = "react_test/games/" + gameState.id + "/result";
 		
-		//send the result
+		// send the result
 		let result = {
 				pointsBlack: pointsBlack,
 				pointsWhite: pointsWhite,
@@ -151,12 +167,12 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		xhttp.setRequestHeader("Content-Type", "application/json");
 		xhttp.send(JSON.stringify(result));
 		
-		//only works at the second time...
-		//getResult();
+		// only works at the second time...
+		// getResult();
 	}
 	
-	function getResult() {
-		//request the updated game state
+	function updateGameState() {
+		// request the updated game state
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
 			if (this.readyState === 4 && this.status === 200) {
@@ -197,9 +213,40 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		return null;
 	}
 	
+	function createFieldSettings() {
+		return <div>
+				<button onClick={pass} style={{marginLeft: "200px", fontSize: "16pt"}}>Pass</button>
+				<button onClick={resign} style={{fontSize: "16pt"}}>Resign</button>
+				<button onClick={updateGameState} style={{marginLeft: "30px", fontSize: "16pt"}}>Refresh</button>
+				<br/>
+				<label htmlFor="playColorOnly" style={{marginTop: "5px"}}>Play only: </label>
+				<input type="checkbox" checked={playOnlyBlack} onChange={e => setPlayOnlyBlack(e.target.checked)} name="Black" />Black
+				<input type="checkbox" checked={playOnlyWhite} onChange={e => setPlayOnlyWhite(e.target.checked)} name="White" />White
+				<br/>
+				<br/>
+				<label htmlFor="currentGameId" style={{fontSize: "14pt", fontWeight: "bold"}}>Current Game: {currentGameId}</label>
+				<br/>
+				<label htmlFor="nextMove" style={{fontSize: "14pt", fontWeight: "bold"}}>Next Move Color: {nextMoveColor}</label>
+				<br/>
+				<label htmlFor="comi">Comi: {comi}</label>
+				<br/>
+				<label htmlFor="blackStonesCaptured">Black Stones Captured: {blackStonesCaptured}</label>
+				<br/>
+				<label htmlFor="whiteStonesCaptured">White Stones Captured: {whiteStonesCaptured}</label>
+			</div>;
+	}
+	
 	function resign() {
 		if (gameState !== null) {
 			if (!gameOver) {
+				if (playOnlyBlack && nextMoveColor === "WHITE") {
+					alert("White's turn (you selected to only play black)");
+					return;
+				}
+				if (playOnlyWhite && nextMoveColor === "BLACK") {
+					alert("Black's turn (you selected to only play white)");
+					return;
+				}
 				alert("not yet implemented");
 			}
 			else {
@@ -212,18 +259,7 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		<table style = {tableStyle} border={border}>
 			{createTable()}
 		</table>
-		<button onClick={pass}>Pass</button><button onClick={resign}>Resign</button><label htmlFor="message"></label>
-		<br/>
-		<br/>
-		<label htmlFor="currentGameId">Current Game: {currentGameId}</label>
-		<br/>
-		<label htmlFor="nextMove">Next Move Color: {nextMoveColor}</label>
-		<br/>
-		<label htmlFor="comi">Comi: {comi}</label>
-		<br/>
-		<label htmlFor="blackStonesCaptured">Black Stones Captured: {blackStonesCaptured}</label>
-		<br/>
-		<label htmlFor="whiteStonesCaptured">White Stones Captured: {whiteStonesCaptured}</label>
+		{createFieldSettings()}
 		<br/>
 		<br/>
 		{createGameResultControllers()}

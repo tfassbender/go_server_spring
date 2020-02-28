@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function GoStoneRandomPlacementFieldComponent({row, col, setGameState, gameId, gameStateStone, nextMoveColor, gameOver}) {
+export default function GoStoneRandomPlacementFieldComponent({row, col, gameState, setGameState, gameId, gameStateStone, nextMoveColor, gameOver, playOnlyBlack, playOnlyWhite}) {
 	const stoneBlackImage = "images/stones/black.png";
 	const stoneWhiteImage = "images/stones/white.png";
 	
@@ -44,6 +44,14 @@ export default function GoStoneRandomPlacementFieldComponent({row, col, setGameS
 		if (gameStateStone === null) {
 			if (gameId !== -1) {
 				if (!gameOver) {
+					if (playOnlyBlack && nextMoveColor === "WHITE") {
+						alert("White's turn (you selected to only play black)");
+						return;
+					}
+					if (playOnlyWhite && nextMoveColor === "BLACK") {
+						alert("Black's turn (you selected to only play white)");
+						return;
+					}
 					let url = "react_test/games/" + gameId + "/move";
 					let move = {
 							row: row,
@@ -71,12 +79,12 @@ export default function GoStoneRandomPlacementFieldComponent({row, col, setGameS
 					xhttp.send(JSON.stringify(move));
 				}
 				else {
-					//game over
+					// game over
 					alert("The game is over! No more moves allowed");
 				}
 			}
 			else {
-				//gameId == -1
+				// gameId == -1
 				alert("No game has been started yet");
 			}
 		}
