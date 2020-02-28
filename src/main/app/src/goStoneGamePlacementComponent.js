@@ -16,7 +16,7 @@ export default function GoStoneRandomPlacementFieldComponent({row, col, setGameS
 // console.log("compare: " + (black == gameStateStone));
 // console.log("compare: " + (black === gameStateStone));
 // if (-1) {
-// console.log("-1 is fucking true!!!!");
+// console.log("-1 is true!!!!");
 // }
 	
 	if (black === gameStateStone) {
@@ -42,35 +42,42 @@ export default function GoStoneRandomPlacementFieldComponent({row, col, setGameS
 	
 	function handleClick() {
 		if (gameStateStone === null) {
-			if (!gameOver) {
-				let url = "react_test/games/" + gameId + "/move";
-				let move = {
-						row: row,
-						col: col,
-						type: "STONE",
-						color: nextMoveColor
-				};
-				// send the move to the server
-				let xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function () {
-					if (this.readyState === 4 && this.status === 201) {
-						let gameState = JSON.parse(this.responseText);
-						
-						setGameState(gameState);
-					}
-					else if (this.readyState === 4 && this.status === 400) {
-						alert("invalid move");
-					}
-					else if (this.readyState === 4) {
-						alert("something went wrong while making the move: readyState = " + this.readyState + " status = " + this.status);
-					}
-				};
-				xhttp.open("PUT", url);
-				xhttp.setRequestHeader("Content-Type", "application/json");
-				xhttp.send(JSON.stringify(move));
+			if (gameId !== -1) {
+				if (!gameOver) {
+					let url = "react_test/games/" + gameId + "/move";
+					let move = {
+							row: row,
+							col: col,
+							type: "STONE",
+							color: nextMoveColor
+					};
+					// send the move to the server
+					let xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function () {
+						if (this.readyState === 4 && this.status === 201) {
+							let gameState = JSON.parse(this.responseText);
+							
+							setGameState(gameState);
+						}
+						else if (this.readyState === 4 && this.status === 400) {
+							alert("invalid move");
+						}
+						else if (this.readyState === 4) {
+							alert("something went wrong while making the move: readyState = " + this.readyState + " status = " + this.status);
+						}
+					};
+					xhttp.open("PUT", url);
+					xhttp.setRequestHeader("Content-Type", "application/json");
+					xhttp.send(JSON.stringify(move));
+				}
+				else {
+					//game over
+					alert("The game is over! No more moves allowed");
+				}
 			}
 			else {
-				alert("The game is over! No more moves allowed");
+				//gameId == -1
+				alert("No game has been started yet");
 			}
 		}
 	}

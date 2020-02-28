@@ -23,6 +23,8 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	var gameOver = false;
 	var points = 0;
 	var comi = 0;
+	var currentGameId = "Game not started yet";
+	var nextMoveColor = "None (game not started yet)";
 	
 	if (gameState !== null) {
 		blackStonesCaptured = gameState.blackStonesCaptured;
@@ -30,6 +32,14 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		gameOver = gameState.over;
 		points = gameState.points;
 		comi = gameState.comi;
+		currentGameId = gameState.id;
+		nextMoveColor = gameState.playersTurn;
+		if (nextMoveColor === null) {
+			nextMoveColor = "None (game not started yet)";
+		}
+		if (gameOver) {
+			nextMoveColor = "None (game over)";
+		}
 	}
 	
 	function createTable() {
@@ -205,11 +215,15 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		<button onClick={pass}>Pass</button><button onClick={resign}>Resign</button><label htmlFor="message"></label>
 		<br/>
 		<br/>
+		<label htmlFor="currentGameId">Current Game: {currentGameId}</label>
+		<br/>
+		<label htmlFor="nextMove">Next Move Color: {nextMoveColor}</label>
+		<br/>
+		<label htmlFor="comi">Comi: {comi}</label>
+		<br/>
 		<label htmlFor="blackStonesCaptured">Black Stones Captured: {blackStonesCaptured}</label>
 		<br/>
 		<label htmlFor="whiteStonesCaptured">White Stones Captured: {whiteStonesCaptured}</label>
-		<br/>
-		<label htmlFor="comi">Comi: {comi}</label>
 		<br/>
 		<br/>
 		{createGameResultControllers()}

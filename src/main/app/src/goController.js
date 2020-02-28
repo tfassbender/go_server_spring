@@ -78,11 +78,18 @@ export default function GoControllerComponent({setGameState}) {
 	return <div>
 		<table>
 			<tr>
+				<th colspan="2">Create a new Game</th>
+			</tr>
+			<tr>
 				<td><label htmlFor="comi">Comi:</label></td>
 				<td><input type="number" value={comi} onInput={e => setComi(e.target.value)} /></td>
 			</tr>
 			<tr>
 				<td><button onClick={createGame}>Create Game</button></td>
+			</tr>
+			<tr style={{height: "10px"}}></tr>
+			<tr>
+				<th colspan="2">Create a new Game</th>
 			</tr>
 			<tr>
 				<td><label htmlFor="id">Game ID:</label></td>

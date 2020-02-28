@@ -94,9 +94,13 @@ public class ReactTestController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<GameState> makeMove(@PathVariable("id") int id, @RequestBody Move move) {
 		log.info("received move: id={} move={}", id, move);
-		Game game = gameRepo.findById(id);
+		Game game = null;
 		try {
+			game = gameRepo.findById(id);
 			game.makeMove(move);
+		}
+		catch (DataAccessException dae) {
+			return new ResponseEntity<GameState>(HttpStatus.NOT_FOUND);
 		}
 		catch (IllegalArgumentException iae) {
 			log.error("error while making the move", iae);
