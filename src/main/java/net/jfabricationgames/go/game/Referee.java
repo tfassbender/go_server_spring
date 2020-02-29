@@ -14,6 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 @ToString
 public class Referee {
 	
+	private static final FieldPosition[] HANDYCAP_STONES_BOARD_9 = {new FieldPosition(2, 6), new FieldPosition(6, 2), new FieldPosition(6, 6),
+			new FieldPosition(2, 2)};
+	private static final FieldPosition[] HANDYCAP_STONES_BOARD_13 = {new FieldPosition(9, 3), new FieldPosition(3, 9), new FieldPosition(9, 9),
+			new FieldPosition(3, 3), new FieldPosition(6, 6), new FieldPosition(6, 3), new FieldPosition(6, 9), new FieldPosition(9, 6),
+			new FieldPosition(3, 6)};
+	private static final FieldPosition[] HANDYCAP_STONES_BOARD_19 = {new FieldPosition(15, 3), new FieldPosition(3, 15), new FieldPosition(15, 15),
+			new FieldPosition(3, 3), new FieldPosition(9, 9), new FieldPosition(9, 3), new FieldPosition(9, 15), new FieldPosition(15, 9),
+			new FieldPosition(3, 9)};
+	
 	private Game game;
 	
 	private PlayerColor[][] board;
@@ -28,12 +37,17 @@ public class Referee {
 		this.game.getMovesAsList();
 		board = new PlayerColor[game.getBoardSize()][game.getBoardSize()];
 		
+		if (game.getHandycap() > 0 && game.getComi() > 1e-5) {
+			throw new IllegalArgumentException("The game is invalid: No handycap AND comi allowed");
+		}
+		
 		//if there are no stones set BLACK starts (lastMove is WHITE)
-		if (game.getHandycap() == 0) {
+		if (game.getHandycap() <= 1) {
 			lastMoveColor = PlayerColor.WHITE;
 		}
 		else {
 			lastMoveColor = PlayerColor.BLACK;
+			addHandycapStones(game.getHandycap());
 		}
 		
 		//reset the captured stones because the moves will be executed again
@@ -57,6 +71,41 @@ public class Referee {
 					throw new IllegalArgumentException("Invalid move. The given list of moves contains a move that is not valid: " + move);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Add the stones for a handycap (from 2 to 9 stones)
+	 */
+	@VisibleForTesting
+	/*private*/ void addHandycapStones(int handycap) {
+		if (handycap < 0) {
+			throw new IllegalArgumentException("A handycap can't be below 0");
+		}
+		if (handycap > 9) {
+			throw new IllegalArgumentException("The maximum handycap is 9 stones");
+		}
+		if (handycap > 4 && game.getBoardSize() == 9) {
+			throw new IllegalArgumentException("On a 9x9 board the maximum handycap is 4 stones");
+		}
+		
+		FieldPosition[] stones;
+		switch (game.getBoardSize()) {
+			case 9:
+				stones = HANDYCAP_STONES_BOARD_9;
+				break;
+			case 13:
+				stones = HANDYCAP_STONES_BOARD_13;
+				break;
+			case 19:
+				stones = HANDYCAP_STONES_BOARD_19;
+				break;
+			default:
+				throw new IllegalStateException("This board size is unknown: " + game.getBoardSize());
+		}
+		
+		for (int i = 0; i < handycap; i++) {
+			board[stones[i].getRow()][stones[i].getCol()] = PlayerColor.BLACK;
 		}
 	}
 	

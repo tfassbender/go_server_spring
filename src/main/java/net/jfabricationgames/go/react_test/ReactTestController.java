@@ -64,23 +64,30 @@ public class ReactTestController {
 	
 	@PostMapping("/games")
 	@ResponseStatus(HttpStatus.CREATED)
-	public GameState createGame(@RequestBody GameCreation gameCreation) {
+	public ResponseEntity<GameState> createGame(@RequestBody GameCreation gameCreation) {
 		LocalDate now = LocalDate.now();
 		
 		User defaultUser = userRepo.findById(defaultUserId).get();
 		log.info("user found: {}", defaultUser);
 		
-		Game game = new GameBuilder().setStarted(now).setLastPlayed(now).setPlayerBlack(defaultUser).setPlayerWhite(defaultUser)
-				.setBoardSize(gameCreation.getBoardSize()).setComi(gameCreation.getComi()).build();
-		log.info("game created: {}", game);
-		
-		gameRepo.create(game);
-		log.info("stored game in database");
-		
-		GameState gameState = game.toGameState();
-		log.info("created game state: {}", gameState);
-		
-		return gameState;
+		try {
+			Game game = new GameBuilder().setStarted(now).setLastPlayed(now).setPlayerBlack(defaultUser).setPlayerWhite(defaultUser)
+					.setBoardSize(gameCreation.getBoardSize()).setComi(gameCreation.getComi()).setHandycap(gameCreation.getHandycap()).build();
+			log.info("game created: {}", game);
+			
+			gameRepo.create(game);
+			log.info("stored game in database");
+			
+			GameState gameState = game.toGameState();
+			log.info("created game state: {}", gameState);
+
+			ResponseEntity<GameState> entity = new ResponseEntity<GameState>(gameState, HttpStatus.CREATED);
+			return entity;
+		}
+		catch (IllegalArgumentException | IllegalStateException e) {
+			log.error("game couldn't be created due to wrong input", e);
+			return new ResponseEntity<GameState>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@DeleteMapping("/games/{id}")

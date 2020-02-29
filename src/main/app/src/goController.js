@@ -4,6 +4,7 @@ export default function GoControllerComponent({setGameState}) {
 	const [id, setId] = React.useState(0);
 	const [comi, setComi] = React.useState(5.5);
 	const [boardSize, setBoardSize] = React.useState(9);
+	const [handycap, setHandycap] = React.useState(0);
 	
 	const urlGames = "react_test/games";// add "/{id}" for load and delete
 	
@@ -11,6 +12,7 @@ export default function GoControllerComponent({setGameState}) {
 		let gameCreation = {
 				comi: comi,
 				boardSize: boardSize,
+				handycap: handycap
 		};
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
@@ -77,6 +79,38 @@ export default function GoControllerComponent({setGameState}) {
 		xhttp.send();
 	}
 	
+	/**
+	 * Set the comi state (and handycap, dependent on each other)
+	 */
+	function setComiInputValue(comi) {
+		if (comi < 0) {
+			comi = 0;
+		}
+		setComi(comi);
+		if (comi !== 0) {
+			setHandycap(0);
+		}
+	}
+
+	/**
+	 * Set the handycap state (and comi, dependent on each other)
+	 */
+	function setHandycapInputValue(handycap) {
+		if (handycap < 0) {
+			handycap = 0;
+		}
+		if (handycap > 9) {
+			handycap = 9;
+		}
+		if (handycap > 4 && boardSize === 9) {
+			handycap = 4;
+		}
+		setHandycap(handycap);
+		if (handycap !== 0) {
+			setComi(0);
+		}
+	}
+	
 	return <div>
 		<table>
 			<tr>
@@ -92,7 +126,11 @@ export default function GoControllerComponent({setGameState}) {
 			</tr>
 			<tr>
 				<td><label htmlFor="comi">Comi:</label></td>
-				<td><input type="number" value={comi} onInput={e => setComi(e.target.value)} /></td>
+				<td><input type="number" value={comi} onInput={e => setComiInputValue(e.target.value)} /></td>
+			</tr>
+			<tr>
+				<td><label htmlFor="handycap">Handycap (Stones): </label></td>
+				<td><input type="number" value={handycap} onInput={e => setHandycapInputValue(e.target.value)} /></td>
 			</tr>
 			<tr>
 				<td><button onClick={createGame}>Create Game</button></td>

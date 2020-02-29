@@ -19,14 +19,15 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		boardSize = gameState.boardSize;
 		bgImage = "images/boards/go_board_" + boardSize + ".png";
 		switch (boardSize) {
-			case 9:
-				boardSizePixels = 500;
-				break;
 			case 13:
 				boardSizePixels = 650;
 				break;
 			case 19:
 				boardSizePixels = 800;
+				break;
+			case 9:
+			default:
+				boardSizePixels = 500;
 				break;
 		}
 		gameOver = gameState.over;
