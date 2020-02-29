@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#compile two times for table of contents, ...
+
+pdflatex pflichtenheft.tex
+pdflatex pflichtenheft.tex
