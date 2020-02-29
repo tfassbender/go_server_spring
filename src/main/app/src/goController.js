@@ -3,12 +3,14 @@ import React from 'react';
 export default function GoControllerComponent({setGameState}) {
 	const [id, setId] = React.useState(0);
 	const [comi, setComi] = React.useState(5.5);
+	const [boardSize, setBoardSize] = React.useState(9);
 	
 	const urlGames = "react_test/games";// add "/{id}" for load and delete
 	
 	function createGame() {
 		let gameCreation = {
-				comi: comi
+				comi: comi,
+				boardSize: boardSize,
 		};
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
@@ -81,6 +83,14 @@ export default function GoControllerComponent({setGameState}) {
 				<th colspan="2" style={{fontSize: "16pt"}}>Create a new Game</th>
 			</tr>
 			<tr>
+				<td><label htmlFor="boardSize">Board Size: </label></td>
+				<td>
+					<input type="radio" value="9"  checked={boardSize === 9}  onChange={e => setBoardSize(parseInt(e.target.value))}/>9
+					<input type="radio" value="13" checked={boardSize === 13} onChange={e => setBoardSize(parseInt(e.target.value))}/>13
+					<input type="radio" value="19" checked={boardSize === 19} onChange={e => setBoardSize(parseInt(e.target.value))}/>19
+				</td>
+			</tr>
+			<tr>
 				<td><label htmlFor="comi">Comi:</label></td>
 				<td><input type="number" value={comi} onInput={e => setComi(e.target.value)} /></td>
 			</tr>
@@ -89,7 +99,7 @@ export default function GoControllerComponent({setGameState}) {
 			</tr>
 			<tr style={{height: "10px"}}></tr>
 			<tr>
-				<th colspan="2" style={{fontSize: "16pt"}}>Create a new Game</th>
+				<th colspan="2" style={{fontSize: "16pt"}}>Load or Delete a Game</th>
 			</tr>
 			<tr>
 				<td><label htmlFor="id">Game ID:</label></td>

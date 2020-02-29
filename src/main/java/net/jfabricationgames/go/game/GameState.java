@@ -10,6 +10,7 @@ public class GameState {
 	private Integer id;
 	private PlayerColor[][] state;
 	private PlayerColor playersTurn;
+	private int boardSize;
 	private boolean over;
 	private double points;
 	private double comi;

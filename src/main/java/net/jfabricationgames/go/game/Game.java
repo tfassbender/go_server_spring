@@ -129,7 +129,8 @@ public class Game {
 	
 	public GameState toGameState() {
 		Referee referee = new Referee(this);
-		return new GameState(id, referee.getBoardCopy(), referee.getNextMoveColor(), over, points, comi, blackStonesCaptured, whiteStonesCaptured);
+		return new GameState(id, referee.getBoardCopy(), referee.getNextMoveColor(), boardSize, over, points, comi, blackStonesCaptured,
+				whiteStonesCaptured);
 	}
 	
 	/**

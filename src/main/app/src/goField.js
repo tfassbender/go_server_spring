@@ -7,22 +7,28 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	const [playOnlyBlack, setPlayOnlyBlack] = React.useState(false);
 	const [playOnlyWhite, setPlayOnlyWhite] = React.useState(false);
 	
-	const fieldSize = 9;
-	const fieldSizePixels = 700;
-	const bgImage = "images/boards/go_board_9.png";
-	const border = 0;
-	const tableStyle = {
-			backgroundImage: 'url(' + bgImage + ')',
-			backgroundSize: '100% 100%',
-			border: border,
-			width: fieldSizePixels,
-			height: fieldSizePixels
-		};
+	var boardSize = 9;
+	var boardSizePixels = 500;
+	var bgImage = "images/boards/go_board_9.png";
+	var border = 0;
 	
 	var gameOver = false;
 	var nextMoveColor = "None (game not started yet)";
 	
 	if (gameState !== null) {
+		boardSize = gameState.boardSize;
+		bgImage = "images/boards/go_board_" + boardSize + ".png";
+		switch (boardSize) {
+			case 9:
+				boardSizePixels = 500;
+				break;
+			case 13:
+				boardSizePixels = 650;
+				break;
+			case 19:
+				boardSizePixels = 800;
+				break;
+		}
 		gameOver = gameState.over;
 		nextMoveColor = gameState.playersTurn;
 		if (nextMoveColor === null) {
@@ -33,6 +39,14 @@ export default function GoFieldComponent({gameState, setGameState}) {
 		}
 	}
 	
+	var tableStyle = {
+			backgroundImage: 'url(' + bgImage + ')',
+			backgroundSize: '100% 100%',
+			border: border,
+			width: boardSizePixels,
+			height: boardSizePixels,
+		};
+	
 	if (playOnlyBlack && playOnlyWhite) {
 		setPlayOnlyBlack(false);
 		setPlayOnlyWhite(false);
@@ -42,10 +56,10 @@ export default function GoFieldComponent({gameState, setGameState}) {
 	    let table = [];
 
 	    // Outer loop to create parent
-	    for (let i = 0; i < fieldSize; i++) {
+	    for (let i = 0; i < boardSize; i++) {
 	        let children = [];
 	        // Inner loop to create children
-	        for (let j = 0; j < fieldSize; j++) {
+	        for (let j = 0; j < boardSize; j++) {
 	        	let gameStateStone = null;
 	        	let nextMoveColor = "BLACK";
 	        	let gameId = -1;

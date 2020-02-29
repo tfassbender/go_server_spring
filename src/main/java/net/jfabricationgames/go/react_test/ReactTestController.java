@@ -40,7 +40,7 @@ public class ReactTestController {
 	 */
 	private static final int defaultUserId = 1;
 	//private static final double defaultComi = 5.5;
-	private static final int defaultBoardSize = 9;
+	//private static final int defaultBoardSize = 9;
 	
 	@Autowired
 	private GameRepository gameRepo;
@@ -71,7 +71,7 @@ public class ReactTestController {
 		log.info("user found: {}", defaultUser);
 		
 		Game game = new GameBuilder().setStarted(now).setLastPlayed(now).setPlayerBlack(defaultUser).setPlayerWhite(defaultUser)
-				.setBoardSize(defaultBoardSize).setComi(gameCreation.getComi()).build();
+				.setBoardSize(gameCreation.getBoardSize()).setComi(gameCreation.getComi()).build();
 		log.info("game created: {}", game);
 		
 		gameRepo.create(game);
