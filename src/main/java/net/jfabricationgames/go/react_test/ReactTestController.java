@@ -26,6 +26,7 @@ import net.jfabricationgames.go.game.GameBuilder;
 import net.jfabricationgames.go.game.GameResult;
 import net.jfabricationgames.go.game.GameState;
 import net.jfabricationgames.go.game.Move;
+import net.jfabricationgames.go.game.Referee;
 import net.jfabricationgames.go.server.data.GameCreation;
 import net.jfabricationgames.go.server.data.User;
 
@@ -73,6 +74,8 @@ public class ReactTestController {
 		try {
 			Game game = new GameBuilder().setStarted(now).setLastPlayed(now).setPlayerBlack(defaultUser).setPlayerWhite(defaultUser)
 					.setBoardSize(gameCreation.getBoardSize()).setComi(gameCreation.getComi()).setHandycap(gameCreation.getHandycap()).build();
+			//create a referee from the new game to check if the input is valid
+			new Referee(game);
 			log.info("game created: {}", game);
 			
 			gameRepo.create(game);

@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.jfabricationgames.go.server.data.GameCreation;
@@ -18,6 +19,7 @@ import net.jfabricationgames.go.server.data.User;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class Game {
 	
@@ -57,29 +59,6 @@ public class Game {
 	private static final char MOVE_STRING_WHITE = 'W';
 	private static final char MOVE_STRING_BLACK = 'B';
 	private static final char MOVE_STRING_PASS = 'P';
-	
-	public Game(int id, LocalDate started, LocalDate lastPlayed, User playerBlack, User playerWhite, String moves, List<Move> moveList, int boardSize,
-			boolean resigned, boolean over, double points, double comi, int handycap, int blackStonesCaptured, int whiteStonesCaptured) {
-		super();
-		this.id = id;
-		this.started = started;
-		this.lastPlayed = lastPlayed;
-		this.playerBlack = playerBlack;
-		this.playerWhite = playerWhite;
-		this.moves = moves;
-		this.moveList = moveList;
-		this.boardSize = boardSize;
-		this.resigned = resigned;
-		this.over = over;
-		this.points = points;
-		this.comi = comi;
-		this.handycap = handycap;
-		this.blackStonesCaptured = blackStonesCaptured;
-		this.whiteStonesCaptured = whiteStonesCaptured;
-		
-		//create a new referee to test the preconditions of the game
-		new Referee(this);
-	}
 	
 	/**
 	 * Build a list of moves from a move string.

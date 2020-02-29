@@ -3,6 +3,7 @@ import React from 'react';
 export default function GoFieldInfoComponent({gameState, setGameState}) {
 	const [pointsBlack, setPointsBlack] = React.useState(0);
 	const [pointsWhite, setPointsWhite] = React.useState(0);
+	const [showResult, setShowResult] = React.useState(false);
 	
 	var blackStonesCaptured = 0;
 	var whiteStonesCaptured = 0;
@@ -76,6 +77,8 @@ export default function GoFieldInfoComponent({gameState, setGameState}) {
 	}
 	
 	function updateGameState() {
+		setShowResult(true);
+		
 		// request the updated game state
 		let xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function () {
@@ -97,7 +100,7 @@ export default function GoFieldInfoComponent({gameState, setGameState}) {
 	}
 	
 	function createGameResult() {
-		if (gameOver) {
+		if (gameOver && showResult) {
 			// points are calculated or game ended draw because of no comi
 			if (points !== 0 || (Math.abs(Math.floor(comi) - comi) < 1e-5)) {
 				let result = "Draw";
