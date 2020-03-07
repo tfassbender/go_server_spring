@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<h1>Register</h1>
+	<img th:src="@{/images/welcome.png}" width=300 />
+	<form method="POST" th:action="@{/register}" id="registerForm">
+
+		<label for="username">Username: </label> <input type="text"
+			name="username" /><br /> <label for="password">Password: </label> <input
+			type="password" name="password" /><br /> <label for="confirm">Confirm
+			password: </label> <input type="password" name="confirm" /><br /> <input
+			type="submit" value="Register" />
+	</form>
+</body>
+</html>
